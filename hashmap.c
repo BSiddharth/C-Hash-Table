@@ -20,7 +20,7 @@ hashmap *create_hashmap() {
 
   // allocating space for hashmap
   hashmap *hashmap_pointer =
-      malloc(sizeof(hashmap) + (hash_map_len * sizeof(hashmap_value)));
+      malloc(sizeof(hashmap) + (hash_map_len * sizeof(hashmap_value *)));
 
   if (hashmap_pointer == NULL) {
     printf("Could not allocate space for hashmap, exiting...");
