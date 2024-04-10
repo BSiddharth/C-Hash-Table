@@ -7,6 +7,7 @@ const intmax_t hash_map_len = 100;
 
 typedef struct HashMapValue {
   size_t data_size;
+  void *key;
   void *data;
   hashmap_value *next; // could be pointing to NULL
 } hashmap_value;
