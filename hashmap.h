@@ -8,7 +8,7 @@ typedef struct HashMap hashmap;
 
 hashmap *create_hashmap();
 
-void insert_in_hash_map(hashmap *hm, char *key,
+void insert_in_hash_map(hashmap *hm, uintmax_t key,
                         void *value); // will also work as update element
 
 void remove_from_hash_map(hashmap *hm, char *key);
