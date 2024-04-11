@@ -6,7 +6,10 @@
 typedef struct HashMapValue hashmap_value;
 typedef struct HashMap hashmap;
 
-hashmap *create_hashmap();
+hashmap *create_hashmap(uintmax_t (*hash_func)(const void *item, uint32_t len,
+                                               uint32_t seed),
+                        bool (*compare_func)(const void *item1,
+                                             const void *item2));
 
 void insert_in_hash_map(hashmap *hm, uintmax_t key,
                         void *value); // will also work as update element

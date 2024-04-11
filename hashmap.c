@@ -14,10 +14,15 @@ typedef struct HashMapValue {
 
 typedef struct HashMap {
   uintmax_t total_buckets;
+  uintmax_t (*hash_func)(const void *item, uint32_t len, uint32_t seed);
+  bool (*compare_func)(const void *item1, const void *item2);
   hashmap_value *keys[];
 } hashmap;
 
-hashmap *create_hashmap() {
+hashmap *create_hashmap(uintmax_t (*hash_func)(const void *item, uint32_t len,
+                                               uint32_t seed),
+                        bool (*compare_func)(const void *item1,
+                                             const void *item2)) {
 
   // allocating space for hashmap
   hashmap *hashmap_pointer =
@@ -30,6 +35,8 @@ hashmap *create_hashmap() {
 
   // setting up the allocated memory for a new hashmap
   hashmap_pointer->total_buckets = total_buckets;
+  hashmap_pointer->hash_func = hash_func; // func are passed as pointers
+  hashmap_pointer->compare_func = compare_func;
   for (uintmax_t i = 0; i < total_buckets; i++) {
     hashmap_pointer->keys[i] = NULL; // NULL means the bucket is empty
   }
