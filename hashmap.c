@@ -14,13 +14,13 @@ typedef struct HashMapValue {
 
 typedef struct HashMap {
   uintmax_t total_buckets;
-  uintmax_t (*hash_func)(const void *item, uint32_t len, uint32_t seed);
+  uint32_t (*hash_func)(const char *item, uint32_t len, uint32_t seed);
   bool (*compare_func)(const void *item1, const void *item2);
   hashmap_value *keys[];
 } hashmap;
 
-hashmap *create_hashmap(uintmax_t (*hash_func)(const void *item, uint32_t len,
-                                               uint32_t seed),
+hashmap *create_hashmap(uint32_t (*hash_func)(const char *item, uint32_t len,
+                                              uint32_t seed),
                         bool (*compare_func)(const void *item1,
                                              const void *item2)) {
 

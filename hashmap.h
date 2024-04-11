@@ -6,8 +6,8 @@
 typedef struct HashMapValue hashmap_value;
 typedef struct HashMap hashmap;
 
-hashmap *create_hashmap(uintmax_t (*hash_func)(const void *item, uint32_t len,
-                                               uint32_t seed),
+hashmap *create_hashmap(uint32_t (*hash_func)(const char *item, uint32_t len,
+                                              uint32_t seed),
                         bool (*compare_func)(const void *item1,
                                              const void *item2));
 

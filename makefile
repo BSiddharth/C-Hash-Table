@@ -6,11 +6,14 @@ hashmap.o: hashmap.c
 test.o: test.c
 	gcc $(CFLAGS) -c test.c
 
-test: hashmap.o test.o
-	gcc $(CFLAGS) test.o hashmap.o -o test
+murmurhash.o: murmurhash.c
+	gcc $(CFLAGS) -c murmurhash.c
+
+test: hashmap.o test.o murmurhash.o
+	gcc $(CFLAGS) test.o hashmap.o murmurhash.o -o test
 
 runtest: test
 	test.exe
 
 clean:
-	del test.o hashmap.o test.exe
+	del test.o hashmap.o murmurhash.o test.exe
