@@ -24,6 +24,7 @@ int main() {
   User sid = {"Siddharth", "Bisht", "1234567890"};
   User vaish = {"Vaishnavi", "Bisht", "1934767890"};
   hashmap *my_hashmap = create_hashmap(&murmurhash, compare_user);
+  insert_in_hash_map(my_hashmap, &sid, sizeof(sid), &vaish, sizeof(vaish));
   printf("Test was succcesful\n");
   return EXIT_SUCCESS;
 }

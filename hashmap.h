@@ -11,8 +11,8 @@ hashmap *create_hashmap(uint32_t (*hash_func)(const char *item, uint32_t len,
                         bool (*compare_func)(const void *item1,
                                              const void *item2));
 
-void insert_in_hash_map(hashmap *hm, uintmax_t key,
-                        void *value); // will also work as update element
+void insert_in_hash_map(hashmap *hm, void *key, size_t key_size, void *value,
+                        size_t value_size); // will also work as update element
 
 void remove_from_hash_map(hashmap *hm, char *key);
 
