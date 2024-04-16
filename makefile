@@ -1,16 +1,17 @@
 CFLAGS = -Wall -Werror -Wno-unused-variable
+CC = gcc
 
 hashmap.o: hashmap.c
-	gcc $(CFLAGS) -c hashmap.c
+	$(CC) $(CFLAGS) -c hashmap.c
 
 test.o: test.c
-	gcc $(CFLAGS) -c test.c
+	$(CC) $(CFLAGS) -c test.c
 
 murmurhash.o: murmurhash.c
-	gcc $(CFLAGS) -c murmurhash.c
+	$(CC) $(CFLAGS) -c murmurhash.c
 
 test: hashmap.o test.o murmurhash.o
-	gcc $(CFLAGS) test.o hashmap.o murmurhash.o -o test
+	$(CC) $(CFLAGS) test.o hashmap.o murmurhash.o -o test
 
 runtest: test
 	test.exe
