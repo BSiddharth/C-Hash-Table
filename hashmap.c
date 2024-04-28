@@ -30,7 +30,7 @@ hashmap *create_hashmap(uint32_t (*hash_func)(const void *item, uint32_t len,
       sizeof(hashmap) + (initial_total_buckets * sizeof(hashmap_value *)));
 
   if (hashmap_pointer == NULL) {
-    printf("Could not allocate space for hashmap, exiting...");
+    printf("Could not allocate space for hashmap, exiting...\n");
     exit(EXIT_FAILURE);
   }
 
@@ -51,14 +51,13 @@ bool insert_in_hash_map(hashmap *hm, void *key, size_t key_size, void *value,
 
   void *value_copy = malloc(value_size);
   if (value_copy == NULL) {
-    printf("Insertion: Could not create space for the new value");
+    printf("Insertion: Could not create space for the new value\n");
     return false;
   }
 
-  int value_copy_status =
-      memcpy_s(value_copy, sizeof(value_copy), value, value_size);
-  if (value_copy_status == 0) {
-    printf("Insertion: Could not copy the new value");
+  int value_copy_status = memcpy_s(value_copy, value_size, value, value_size);
+  if (value_copy_status != 0) {
+    printf("Insertion: Could not copy the new value\n");
     return false;
   }
 
@@ -78,19 +77,19 @@ bool insert_in_hash_map(hashmap *hm, void *key, size_t key_size, void *value,
 
   hashmap_value *new_hashmapvalue = malloc(sizeof(hashmap_value));
   if (new_hashmapvalue == NULL) {
-    printf("Insertion: Could not create space for the new hashmap_value");
+    printf("Insertion: Could not create space for the new hashmap_value\n");
     return false;
   }
 
   void *key_copy = malloc(key_size);
   if (key_copy == NULL) {
-    printf("Insertion: Could not create space for the new key");
+    printf("Insertion: Could not create space for the new key\n");
     return false;
   }
 
-  int key_copy_status = memcpy_s(key_copy, sizeof(key_copy), key, key_size);
-  if (key_copy_status == 0) {
-    printf("Insertion: Could not copy the new key");
+  int key_copy_status = memcpy_s(key_copy, key_size, key, key_size);
+  if (key_copy_status != 0) {
+    printf("Insertion: Could not copy the new key\n");
     return false;
   }
   new_hashmapvalue->key = key_copy;
@@ -98,7 +97,6 @@ bool insert_in_hash_map(hashmap *hm, void *key, size_t key_size, void *value,
   new_hashmapvalue->next = NULL;
 
   if (last_element == NULL) {
-    printf("element addr: %p being saved\n", new_hashmapvalue->key);
     hm->keys[index] = new_hashmapvalue;
   } else {
     last_element->next = new_hashmapvalue;
@@ -115,18 +113,24 @@ replace:
 void remove_from_hash_map(hashmap *hm, char *key);
 
 bool is_in_hash_map(hashmap *hm, void *key, size_t key_size) {
+  void *return_val = get_value(hm, key, key_size);
+  if (return_val == NULL) {
+    return false;
+  }
+  return true;
+}
+
+void *get_value(hashmap *hm, void *key, size_t key_size) {
   uintmax_t index =
       hm->hash_func(key, key_size, secret_seed) % hm->total_buckets;
+
   hashmap_value *current_element = hm->keys[index];
+
   while (current_element != NULL) {
-    printf("Element addr: %p being sent\n", current_element->key);
     if (hm->compare_func(current_element->key, key)) {
-      return true;
+      return current_element->data;
     }
     current_element = current_element->next;
   }
-  return false;
+  return NULL;
 }
-
-/* Always check for that key exists in the HashMap */
-void *get_value(hashmap *hm, char *key);

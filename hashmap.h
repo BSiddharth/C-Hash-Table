@@ -18,7 +18,5 @@ void remove_from_hash_map(hashmap *hm, char *key);
 
 bool is_in_hash_map(hashmap *hm, void *key, size_t key_size);
 
-void *get_value(hashmap *hm,
-                char *key); // always check for that key exists in the hashmap
-
+void *get_value(hashmap *hm, void *key, size_t key_size);
 #endif // !Hash_Map_H

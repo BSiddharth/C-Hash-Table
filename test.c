@@ -14,11 +14,6 @@ typedef struct {
 bool compare_user(const void *user1, const void *user2) {
   const User *user_1 = (const User *)user1;
   const User *user_2 = (const User *)user2;
-  printf("Element addr: %p being received \n", user_1);
-  printf("first name addr: %p\n", user_1->first_name);
-  printf("last name addr: %p\n", user_1->last_name);
-  printf("phone num addr: %p\n", user_1->phone_number);
-  // printf("%s\n", user_1->phone_number);
 
   // use "or" instead of "and" because strcmp gives "0" if equal
   bool result = strcmp(user_1->first_name, user_2->first_name) ||
@@ -67,8 +62,15 @@ int main() {
       &hash_user, compare_user); // &func and func are the same thing
 
   insert_in_hash_map(my_hashmap, &sid, sizeof(sid), &vaish, sizeof(vaish));
-  // bool isitin = is_in_hash_map(my_hashmap, &sid, sizeof(sid));
-  assert(is_in_hash_map(my_hashmap, &sid, sizeof(sid)));
+
+  assert(is_in_hash_map(my_hashmap, &sid, sizeof(sid))); // should be present
+  assert(!is_in_hash_map(my_hashmap, &vaish,
+                         sizeof(vaish))); // should not be present
+
+  User *returned_user = get_value(my_hashmap, &sid, sizeof(sid));
+  assert((strcmp((returned_user->first_name), vaish.first_name) ||
+          strcmp((returned_user->last_name), vaish.last_name) ||
+          strcmp((returned_user->phone_number), vaish.phone_number)) == 0);
 
   printf("Test was succcesful\n");
   return EXIT_SUCCESS;
