@@ -16,13 +16,12 @@ typedef struct HashMapValue {
 
 typedef struct HashMap {
   uintmax_t total_buckets;
-  uint32_t (*hash_func)(const void *item, uint32_t len, uint32_t seed);
+  uint32_t (*hash_func)(const void *item, uint32_t seed);
   bool (*compare_func)(const void *item1, const void *item2);
   hashmap_value *keys[];
 } hashmap;
 
-hashmap *create_hashmap(uint32_t (*hash_func)(const void *item, uint32_t len,
-                                              uint32_t seed),
+hashmap *create_hashmap(uint32_t (*hash_func)(const void *item, uint32_t seed),
                         bool (*compare_func)(const void *item1,
                                              const void *item2)) {
   // allocating space for hashmap
@@ -60,9 +59,7 @@ bool insert_in_hash_map(hashmap *hm, void *key, size_t key_size, void *value,
     printf("Insertion: Could not copy the new value\n");
     return false;
   }
-
-  uintmax_t index =
-      hm->hash_func(key, key_size, secret_seed) % hm->total_buckets;
+  uintmax_t index = hm->hash_func(key, secret_seed) % hm->total_buckets;
 
   hashmap_value *current_element = hm->keys[index];
   hashmap_value *last_element = NULL;
@@ -71,8 +68,8 @@ bool insert_in_hash_map(hashmap *hm, void *key, size_t key_size, void *value,
     if (hm->compare_func(current_element->key, key)) {
       goto replace;
     }
-    current_element = current_element->next;
     last_element = current_element;
+    current_element = current_element->next;
   }
 
   hashmap_value *new_hashmapvalue = malloc(sizeof(hashmap_value));
@@ -110,9 +107,29 @@ replace:
   return true;
 }
 
-void remove_from_hash_map(hashmap *hm, char *key);
+bool remove_from_hash_map(hashmap *hm, void *key, size_t key_size) {
+
+  uintmax_t index = hm->hash_func(key, secret_seed) % hm->total_buckets;
+
+  hashmap_value *current_element = hm->keys[index];
+  hashmap_value *last_element = NULL;
+
+  while (current_element != NULL) {
+    if (hm->compare_func(current_element, key)) {
+      if (last_element == NULL) {
+        hm->keys[index] = current_element->next;
+      } else {
+        last_element->next = current_element->next;
+      }
+      free(current_element);
+    }
+    last_element = current_element;
+  }
+  return true;
+}
 
 bool is_in_hash_map(hashmap *hm, void *key, size_t key_size) {
+  // printf("dock\n");
   void *return_val = get_value(hm, key, key_size);
   if (return_val == NULL) {
     return false;
@@ -121,9 +138,10 @@ bool is_in_hash_map(hashmap *hm, void *key, size_t key_size) {
 }
 
 void *get_value(hashmap *hm, void *key, size_t key_size) {
-  uintmax_t index =
-      hm->hash_func(key, key_size, secret_seed) % hm->total_buckets;
+  // printf("hi\n");
+  uintmax_t index = hm->hash_func(key, secret_seed) % hm->total_buckets;
 
+  // printf("hidsf\n");
   hashmap_value *current_element = hm->keys[index];
 
   while (current_element != NULL) {

@@ -1,9 +1,20 @@
 #include "hashmap.h"
 #include "murmurhash.h"
 #include <assert.h>
+#include <corecrt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define CHECKCOPYERROR(el)                                                     \
+  if (result != 0) {                                                           \
+    printf("Error while copying ");                                            \
+    printf(el);                                                                \
+    printf("\n");                                                              \
+    exit(EXIT_FAILURE);                                                        \
+  }
+
+const uint32_t mumurhash_seed = 123123;
 
 typedef struct {
   char *first_name;
@@ -23,33 +34,24 @@ bool compare_user(const void *user1, const void *user2) {
   return result == 0;
 }
 
-uint32_t hash_user(const void *item, uint32_t len, uint32_t seed) {
+uint32_t hash_user(const void *item, uint32_t seed) {
   const User *user = item;
-  size_t buffer_len = strlen(user->first_name) + strlen(user->last_name) +
-                      strlen(user->phone_number);
-  char *user_str[buffer_len + 1];
-  int result;
+  size_t user_data_len = strlen(user->first_name) + strlen(user->last_name) +
+                         strlen(user->phone_number);
+  char *user_str[user_data_len + 1];
+  errno_t result;
 
-  result =
-      strcpy_s((char *)user_str, buffer_len + 1, (char *)&(user->first_name));
-  if (result != 0) {
-    printf("Error while copying first_name");
-    exit(EXIT_FAILURE);
-  }
+  result = strcpy_s((char *)user_str, user_data_len + 1,
+                    (char *)&(user->first_name));
+  CHECKCOPYERROR("first name")
 
-  result = strcat_s((char *)user_str, buffer_len + 1, user->last_name);
-  if (result != 0) {
-    printf("Error while copying last_name");
-    exit(EXIT_FAILURE);
-  }
-  result = strcat_s((char *)user_str, buffer_len + 1, user->phone_number);
+  result = strcat_s((char *)user_str, user_data_len + 1, user->last_name);
+  CHECKCOPYERROR("last name")
 
-  if (result != 0) {
-    printf("Error while copying phone_number");
-    exit(EXIT_FAILURE);
-  }
+  result = strcat_s((char *)user_str, user_data_len + 1, user->phone_number);
+  CHECKCOPYERROR("phone number")
 
-  return murmurhash((const char *)user_str, buffer_len, 123123);
+  return murmurhash((const char *)user_str, user_data_len, mumurhash_seed);
 }
 
 int main() {
@@ -57,9 +59,19 @@ int main() {
 
   User sid = {"Siddharth", "Bisht", "1234567890"};
   User vaish = {"Vaishnavi", "Bisht", "1934767890"};
+  User mom = {"Mom", "Bisht", "5934767890"};
+  User dad = {"Dad", "Bisht", "1034767890"};
+
+  // Test hashmap creation
+  printf("Test 1: Creating hashmap \n");
 
   hashmap *my_hashmap = create_hashmap(
       &hash_user, compare_user); // &func and func are the same thing
+
+  printf("Test 1: Succesful \n");
+
+  // Test insertion
+  printf("Test 2: Insertion in hashmap \n");
 
   insert_in_hash_map(my_hashmap, &sid, sizeof(sid), &vaish, sizeof(vaish));
 
@@ -67,11 +79,36 @@ int main() {
   assert(!is_in_hash_map(my_hashmap, &vaish,
                          sizeof(vaish))); // should not be present
 
-  User *returned_user = get_value(my_hashmap, &sid, sizeof(sid));
-  assert((strcmp((returned_user->first_name), vaish.first_name) ||
-          strcmp((returned_user->last_name), vaish.last_name) ||
-          strcmp((returned_user->phone_number), vaish.phone_number)) == 0);
+  printf("Test 2: Succesful \n");
 
-  printf("Test was succcesful\n");
+  // Test returned value
+  printf("Test 3: Check returned value \n");
+
+  User *returned_user = get_value(my_hashmap, &sid, sizeof(sid));
+  assert(compare_user(&vaish, returned_user));
+
+  printf("Test 3: Succesful \n");
+
+  // Test replacement
+  printf("Test 4: Test replacing a value \n");
+
+  insert_in_hash_map(my_hashmap, &sid, sizeof(sid), &dad, sizeof(dad));
+  // system("pause");
+  printf("%d\n", is_in_hash_map(my_hashmap, &sid, sizeof(sid)));
+  printf("%d\n", is_in_hash_map(my_hashmap, &sid, sizeof(sid)));
+  printf("%d\n", is_in_hash_map(my_hashmap, &sid, sizeof(sid)));
+  // printf("%d\n", is_in_hash_map(my_hashmap, &mom, sizeof(mom)));
+  // printf("%d\n", is_in_hash_map(my_hashmap, &mom, sizeof(mom)));
+  // printf("%d\n", is_in_hash_map(my_hashmap, &mom, sizeof(mom)));
+  assert(is_in_hash_map(my_hashmap, &sid, sizeof(sid))); // should be present
+  assert(!is_in_hash_map(my_hashmap, &dad,
+                         sizeof(dad))); // should not be present
+
+  returned_user = get_value(my_hashmap, &sid, sizeof(sid));
+  assert(compare_user(&dad, returned_user));
+
+  printf("Test 4: Succesful \n");
+
+  printf("Test was succesful\n");
   return EXIT_SUCCESS;
 }
