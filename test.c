@@ -1,7 +1,6 @@
 #include "hashmap.h"
 #include "murmurhash.h"
 #include <assert.h>
-#include <corecrt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,20 +37,19 @@ uint32_t hash_user(const void *item, uint32_t seed) {
   const User *user = item;
   size_t user_data_len = strlen(user->first_name) + strlen(user->last_name) +
                          strlen(user->phone_number);
-  char *user_str[user_data_len + 1];
+  char user_str[user_data_len + 1];
   errno_t result;
 
-  result = strcpy_s((char *)user_str, user_data_len + 1,
-                    (char *)&(user->first_name));
+  result = strcpy_s(user_str, user_data_len + 1, user->first_name);
   CHECKCOPYERROR("first name")
 
-  result = strcat_s((char *)user_str, user_data_len + 1, user->last_name);
+  result = strcat_s(user_str, user_data_len + 1, user->last_name);
   CHECKCOPYERROR("last name")
 
-  result = strcat_s((char *)user_str, user_data_len + 1, user->phone_number);
+  result = strcat_s(user_str, user_data_len + 1, user->phone_number);
   CHECKCOPYERROR("phone number")
 
-  return murmurhash((const char *)user_str, user_data_len, mumurhash_seed);
+  return murmurhash(user_str, user_data_len, mumurhash_seed);
 }
 
 int main() {
@@ -93,13 +91,7 @@ int main() {
   printf("Test 4: Test replacing a value \n");
 
   insert_in_hash_map(my_hashmap, &sid, sizeof(sid), &dad, sizeof(dad));
-  // system("pause");
-  printf("%d\n", is_in_hash_map(my_hashmap, &sid, sizeof(sid)));
-  printf("%d\n", is_in_hash_map(my_hashmap, &sid, sizeof(sid)));
-  printf("%d\n", is_in_hash_map(my_hashmap, &sid, sizeof(sid)));
-  // printf("%d\n", is_in_hash_map(my_hashmap, &mom, sizeof(mom)));
-  // printf("%d\n", is_in_hash_map(my_hashmap, &mom, sizeof(mom)));
-  // printf("%d\n", is_in_hash_map(my_hashmap, &mom, sizeof(mom)));
+
   assert(is_in_hash_map(my_hashmap, &sid, sizeof(sid))); // should be present
   assert(!is_in_hash_map(my_hashmap, &dad,
                          sizeof(dad))); // should not be present

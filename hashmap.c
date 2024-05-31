@@ -129,7 +129,6 @@ bool remove_from_hash_map(hashmap *hm, void *key, size_t key_size) {
 }
 
 bool is_in_hash_map(hashmap *hm, void *key, size_t key_size) {
-  // printf("dock\n");
   void *return_val = get_value(hm, key, key_size);
   if (return_val == NULL) {
     return false;
@@ -138,10 +137,8 @@ bool is_in_hash_map(hashmap *hm, void *key, size_t key_size) {
 }
 
 void *get_value(hashmap *hm, void *key, size_t key_size) {
-  // printf("hi\n");
   uintmax_t index = hm->hash_func(key, secret_seed) % hm->total_buckets;
 
-  // printf("hidsf\n");
   hashmap_value *current_element = hm->keys[index];
 
   while (current_element != NULL) {
