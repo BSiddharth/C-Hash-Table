@@ -82,8 +82,7 @@ int main() {
   // Test returned value
   printf("Test 3: Check returned value \n");
 
-  User *returned_user = get_value(my_hashmap, &sid, sizeof(sid));
-  assert(compare_user(&vaish, returned_user));
+  assert(compare_user(&vaish, get_value(my_hashmap, &sid, sizeof(sid))));
 
   printf("Test 3: Succesful \n");
 
@@ -96,10 +95,12 @@ int main() {
   assert(!is_in_hash_map(my_hashmap, &dad,
                          sizeof(dad))); // should not be present
 
-  returned_user = get_value(my_hashmap, &sid, sizeof(sid));
-  assert(compare_user(&dad, returned_user));
+  assert(compare_user(&dad, get_value(my_hashmap, &sid, sizeof(sid))));
 
   printf("Test 4: Succesful \n");
+
+  // Test deletion
+  printf("Test 5: Deleting a value \n");
 
   printf("Test was succesful\n");
   return EXIT_SUCCESS;
