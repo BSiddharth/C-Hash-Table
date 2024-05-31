@@ -108,7 +108,7 @@ int main() {
   remove_from_hash_map(my_hashmap, &dad, sizeof(dad));
   assert(
       !is_in_hash_map(my_hashmap, &dad, sizeof(dad))); // should not be present
-                                                       //
+
   printf("Test 5: Succesful \n");
 
   printf("Test was succesful\n");
