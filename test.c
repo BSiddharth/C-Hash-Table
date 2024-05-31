@@ -102,6 +102,15 @@ int main() {
   // Test deletion
   printf("Test 5: Deleting a value \n");
 
+  insert_in_hash_map(my_hashmap, &dad, sizeof(dad), &mom, sizeof(mom));
+  assert(is_in_hash_map(my_hashmap, &dad, sizeof(dad))); // should be present
+
+  remove_from_hash_map(my_hashmap, &dad, sizeof(dad));
+  assert(
+      !is_in_hash_map(my_hashmap, &dad, sizeof(dad))); // should not be present
+                                                       //
+  printf("Test 5: Succesful \n");
+
   printf("Test was succesful\n");
   return EXIT_SUCCESS;
 }

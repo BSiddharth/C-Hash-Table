@@ -107,6 +107,8 @@ replace:
   return true;
 }
 
+/* returns true if operation was successful else false when the key does not
+ * exist in the hashmap */
 bool remove_from_hash_map(hashmap *hm, void *key, size_t key_size) {
 
   uintmax_t index = hm->hash_func(key, secret_seed) % hm->total_buckets;
@@ -115,17 +117,21 @@ bool remove_from_hash_map(hashmap *hm, void *key, size_t key_size) {
   hashmap_value *last_element = NULL;
 
   while (current_element != NULL) {
-    if (hm->compare_func(current_element, key)) {
+    if (hm->compare_func(current_element->key, key)) {
       if (last_element == NULL) {
         hm->keys[index] = current_element->next;
       } else {
         last_element->next = current_element->next;
       }
+      free(current_element->key);
+      free(current_element->data);
       free(current_element);
+      return true;
     }
     last_element = current_element;
+    current_element = current_element->next;
   }
-  return true;
+  return false;
 }
 
 bool is_in_hash_map(hashmap *hm, void *key, size_t key_size) {
